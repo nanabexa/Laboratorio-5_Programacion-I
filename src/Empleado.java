@@ -45,10 +45,18 @@ public class Empleado {
         }
         this.nombre = nombre;
     }
-    public void setCedula(String cedula) {
+    public void setCedula(String cedula) throws CedulaInvalidaException {
+        if (cedula == null || cedula.trim().isEmpty()) {
+            throw new CedulaInvalidaException("La cédula no puede estar vacía.");
+        }
+        // Nacional: formato típico 1-2345-6789
+        // Extranjero: formato E-123-456
+        if (!(cedula.matches("\\d+-\\d+-\\d+") || cedula.matches("E-\\d+-\\d+"))) {
+            throw new CedulaInvalidaException("Formato de cédula inválido. Ejemplos válidos: 8-1234-5678 o E-123-456.");
+        }
+
         this.cedula = cedula;
     }
-
     public void setDepartamento(String departamento) {
         this.departamento = departamento;
     }
@@ -72,7 +80,7 @@ public class Empleado {
         salarioNeto = salarioBruto - calcularSeguroSocial() - calcularSeguroEducativo();
     }
 
-    public void obtenerDatos(BufferedReader reader) throws NombreInvalidoException, IOException  {
+    public void obtenerDatos(BufferedReader reader) throws NombreInvalidoException,CedulaInvalidaException, IOException  {
         System.out.println("Ingrese su nombre");
         setNombre(reader.readLine());
         System.out.println("Ingrese su cedula con guiones");

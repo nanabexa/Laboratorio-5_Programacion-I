@@ -11,7 +11,7 @@ public class Main {
             empleado.imprimirDatos();
 
         }catch (NombreInvalidoException | CedulaInvalidaException | DepartamentoInvalidoException e) {
-            System.out.println("Error en el nombre: " + e.getMessage());
+            System.out.println("Error en la entrada: " + e.getMessage());
         }catch (NumberFormatException e) {
             System.out.println("Error: Ingrese un valor numérico válido. " + e.getMessage());
         } catch (IOException e) {

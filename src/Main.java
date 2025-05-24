@@ -10,7 +10,7 @@ public class Main {
             empleado.obtenerDatos(br);
             empleado.imprimirDatos();
 
-        }catch (NombreInvalidoException e) {
+        }catch (NombreInvalidoException | CedulaInvalidaException e) {
             System.out.println("Error en el nombre: " + e.getMessage());
         }catch (NumberFormatException e) {
             System.out.println("Error: Ingrese un valor numérico válido. " + e.getMessage());

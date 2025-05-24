@@ -8,7 +8,7 @@ public class Empleado {
     private double salarioBruto;
     private double salarioNeto;
 
-    public Empleado (){}
+    public Empleado (){}//Profe si le ponía parámetros o hacía el constructor completo, las excepciones no se ejecutaban
 
     //Métodos Getters
     public String getNombre() {
@@ -33,7 +33,6 @@ public class Empleado {
 
     //Métodos setters
     public void setNombre(String nombre) throws NombreInvalidoException{
-        System.out.println("Validando nombre: " + nombre);
         if (nombre == null || nombre.trim().isEmpty()) {
             throw new NombreInvalidoException("El nombre no puede ser nulo o vacío.");
         }
@@ -43,19 +42,40 @@ public class Empleado {
         if (nombre.matches(".*\\d.*")) {
             throw new NombreInvalidoException("El nombre no puede contener números.");
         }
-        if (!nombre.matches("\\p{L}+")) {
+        if (!nombre.matches("[a-zA-Z]+( [a-zA-Z]+)*")) {
             throw new NombreInvalidoException("El nombre no puede contener caracteres especiales.");
         }
+        if (!nombre.matches("^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(\\s+[A-Za-zÁÉÍÓÚáéíóúÑñ]+)+$")) {
+            throw new NombreInvalidoException("Debe ingresar al menos un nombre y un apellido, usando solo letras.");
+        }
+        if (nombre.matches(".*(.)\\1{3,}.*")) {
+            throw new NombreInvalidoException("El nombre no debe contener la misma letra muchas veces seguidas.");
+        }
+
         this.nombre = nombre;
     }
     public void setCedula(String cedula) throws CedulaInvalidaException {
         if (cedula == null || cedula.trim().isEmpty()) {
             throw new CedulaInvalidaException("La cédula no puede estar vacía.");
         }
-        // Nacional: formato típico 1-2345-6789
+        // Nacional: formato típico 8-2345-6789
         // Extranjero: formato E-123-456
         if (!(cedula.matches("\\d+-\\d+-\\d+") || cedula.matches("E-\\d+-\\d+"))) {
             throw new CedulaInvalidaException("Formato de cédula inválido. Ejemplos válidos: 8-1234-5678 o E-123-456.");
+        }
+        if (cedula.matches("\\d+-.*") && cedula.startsWith("0")) {
+            throw new CedulaInvalidaException("La cédula nacional no puede comenzar con 0.");
+        }
+        if (cedula.startsWith("E-")) {
+            String[] partes = cedula.split("-");
+            if (partes.length < 2 || partes[1].startsWith("0")) {
+                throw new CedulaInvalidaException("La cédula extranjera no puede comenzar con 0 después de la 'E-'.");
+            }
+        }
+
+        String noCeros = cedula.replaceAll("[^0-9]", ""); // quita letras y guiones
+        if (noCeros.matches("0+")) {
+            throw new CedulaInvalidaException("La cédula no puede contener solo ceros.");
         }
 
         this.cedula = cedula;
@@ -103,6 +123,7 @@ public class Empleado {
         setNombre(reader.readLine());
         System.out.println("Ingrese su cedula con guiones");
         setCedula(reader.readLine());
+        System.out.println("Departamentos:\n Finanzas, Recursos Humanos, Ventas, Tecnología o Administración");
         System.out.println("Ingrese su departamento");
         setDepartamento(reader.readLine());
         System.out.println("Ingrese su salario Bruto");
@@ -116,7 +137,7 @@ public class Empleado {
         System.out.println("Cedula: " + cedula);
         System.out.println("Departamento: " + departamento);
         System.out.println("Salario Bruto: " + salarioBruto);
-        System.out.println("Salario Neto: " + salarioNeto);
+        System.out.println("Salario Neto: " +  String.format("%.2f", salarioNeto));
 
 
     }

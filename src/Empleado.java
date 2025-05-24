@@ -43,6 +43,9 @@ public class Empleado {
         if (nombre.matches(".*\\d.*")) {
             throw new NombreInvalidoException("El nombre no puede contener números.");
         }
+        if (!nombre.matches("\\p{L}+")) {
+            throw new NombreInvalidoException("El nombre no puede contener caracteres especiales.");
+        }
         this.nombre = nombre;
     }
     public void setCedula(String cedula) throws CedulaInvalidaException {
@@ -57,8 +60,23 @@ public class Empleado {
 
         this.cedula = cedula;
     }
-    public void setDepartamento(String departamento) {
-        this.departamento = departamento;
+    public void setDepartamento(String departamento) throws DepartamentoInvalidoException {
+        if (departamento == null || departamento.trim().isEmpty()) {
+            throw new DepartamentoInvalidoException("El departamento no puede estar vacío.");
+        }
+        // Validación sin importar mayúsculas/minúsculas
+        if (departamento.equalsIgnoreCase("FINANZAS") ||
+                departamento.equalsIgnoreCase("RECURSOS HUMANOS") ||
+                departamento.equalsIgnoreCase("VENTAS") ||
+                departamento.equalsIgnoreCase("TECNOLOGÍA") ||
+                departamento.equalsIgnoreCase("ADMINISTRACIÓN")) {
+            this.departamento = departamento;
+
+        } else {
+            throw new DepartamentoInvalidoException(
+                    "Departamento inválido. Debe ser Finanzas, Recursos Humanos, Ventas, Tecnología o Administración."
+            );
+        }
     }
 
     public void setSalarioBruto(double salarioBruto) {
@@ -80,7 +98,7 @@ public class Empleado {
         salarioNeto = salarioBruto - calcularSeguroSocial() - calcularSeguroEducativo();
     }
 
-    public void obtenerDatos(BufferedReader reader) throws NombreInvalidoException,CedulaInvalidaException, IOException  {
+    public void obtenerDatos(BufferedReader reader) throws NombreInvalidoException,CedulaInvalidaException, IOException, DepartamentoInvalidoException  {
         System.out.println("Ingrese su nombre");
         setNombre(reader.readLine());
         System.out.println("Ingrese su cedula con guiones");
@@ -89,6 +107,7 @@ public class Empleado {
         setDepartamento(reader.readLine());
         System.out.println("Ingrese su salario Bruto");
         setSalarioBruto(Double.parseDouble(reader.readLine()));
+
 
 
     }

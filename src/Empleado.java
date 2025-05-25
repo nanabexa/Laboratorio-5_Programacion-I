@@ -171,7 +171,7 @@ public class Empleado {
     public double descuentosAdicionales() throws IOException {
         Double totalDescuentosAdicionales = 0.0;
         System.out.println("¿Desea descontar un préstamo? s/n");
-        if ("s".equals(reader.readLine().toLowerCase())) {
+        if ("s".equals(reader.readLine().toLowerCase())) { //Puedes investigar cual es la diferencia entre toLowerCase y equalsIgnoreCase, intellij me marca que debes reemplazar
             System.out.println("Ingrese el valor del préstamo");
             setPrestamo(Double.parseDouble(reader.readLine()));
         }

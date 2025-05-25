@@ -5,14 +5,24 @@ public class Empleado {
     private String nombre;
     private String cedula;
     private String departamento;
-    private double salarioBruto;
-    private double salarioNeto;
-    private double prestamo;
-    private double cuota;
-    private double pension;
+    private Double salarioBruto;
+    private Double salarioNeto;
+    private Double prestamo;
+    private Double cuota;
+    private Double pension;
+    private BufferedReader reader = new BufferedReader(new java.io.InputStreamReader(System.in));
 
 
-    public Empleado (){}//Profe si le ponía parámetros o hacía el constructor completo, las excepciones no se ejecutaban
+    public Empleado (){
+        this.nombre = "";
+        this.cedula = "";
+        this.departamento = "";
+        this.salarioBruto = 0.0;
+        this.salarioNeto = 0.0;
+        this.prestamo = 0.0;
+        this.cuota = 0.0;
+        this.pension = 0.0;
+    }//Profe si le ponía parámetros o hacía el constructor completo, las excepciones no se ejecutaban
 
     //Métodos Getters
     public String getNombre() {
@@ -66,6 +76,15 @@ public class Empleado {
         }
         if (nombre.matches(".*(.)\\1{3,}.*")) {
             throw new NombreInvalidoException("El nombre no debe contener la misma letra muchas veces seguidas.");
+            }
+        if (nombre.matches(".*\\s+\\s+.*")) {
+            throw new NombreInvalidoException("El nombre no debe contener espacios en blanco.");
+        }
+        String[] palabras = nombre.trim().split("\\s+");
+        for (String palabra : palabras) {
+            if (!palabra.matches("[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+")) {
+                throw new NombreInvalidoException("Cada palabra debe iniciar con mayúscula seguida de minúsculas. Error en: " + palabra);
+            }
         }
 
         this.nombre = nombre;
@@ -104,8 +123,8 @@ public class Empleado {
         if (departamento.equalsIgnoreCase("FINANZAS") ||
                 departamento.equalsIgnoreCase("RECURSOS HUMANOS") ||
                 departamento.equalsIgnoreCase("VENTAS") ||
-                departamento.equalsIgnoreCase("TECNOLOGÍA") ||
-                departamento.equalsIgnoreCase("ADMINISTRACIÓN")) {
+                departamento.equalsIgnoreCase("TECNOLOGIA") ||
+                departamento.equalsIgnoreCase("ADMINISTRACION")) {
             this.departamento = departamento;
 
         } else {
@@ -115,8 +134,28 @@ public class Empleado {
         }
     }
 
-    public void setSalarioBruto(double salarioBruto) {
+    public void setSalarioBruto(Double salarioBruto) throws SalarioBrutoInvalido {
+        if (salarioBruto == null) {
+            throw new SalarioBrutoInvalido("El salario bruto no puede estar vacío.");
+        }
+        if (salarioBruto <= 0) {
+            throw new SalarioBrutoInvalido("El salario bruto debe ser mayor que 0.");
+        }
         this.salarioBruto = salarioBruto;
+        calcularSalarioNeto();
+    }
+    public void setPrestamo(Double prestamo){
+        this.prestamo = prestamo;
+        calcularSalarioNeto();
+    }
+
+    public void setCuota(Double cuota){
+        this.cuota = cuota;
+        calcularSalarioNeto();
+    }
+
+    public void setPension(Double pension){
+        this.pension = pension;
         calcularSalarioNeto();
     }
 
@@ -129,54 +168,41 @@ public class Empleado {
     public double calcularSeguroEducativo(){
         return salarioBruto *0.0125;
     }
+    public double descuentosAdicionales() throws IOException {
+        Double totalDescuentosAdicionales = 0.0;
+        System.out.println("¿Desea descontar un préstamo? s/n");
+        if ("s".equals(reader.readLine().toLowerCase())) {
+            System.out.println("Ingrese el valor del préstamo");
+            setPrestamo(Double.parseDouble(reader.readLine()));
+        }
+        System.out.println("¿Desea descontar una cuota? s/n");
+        if ("s".equals(reader.readLine().toLowerCase())) {
+            System.out.println("Ingrese el valor de la cuota");
+            setCuota(Double.parseDouble(reader.readLine()));
+        }
+        System.out.println("¿Desea descontar una pensión? s/n");
+        if ("s".equals(reader.readLine().toLowerCase())) {
+            System.out.println("Ingrese el valor de la pensión");
+            setPension(Double.parseDouble(reader.readLine()));
+        }return totalDescuentosAdicionales;
+    }//Lo ideal es meterlo en un metodo y luego pasarlo a la impresion es mas facil poner las exepciones ahi, y no llenar demasiado de codigo el prinft
+
 
     public void calcularSalarioNeto() {
         salarioNeto = salarioBruto - calcularSeguroSocial() - calcularSeguroEducativo() - prestamo - cuota - pension;
     }
 
-    public void setPrestamo(double prestamo){
-        this.prestamo = prestamo;
-        calcularSalarioNeto();
-    }
-
-    public void setCuota(double cuota){
-        this.cuota = cuota;
-        calcularSalarioNeto();
-    }
-
-    public void setPension(double pension){
-        this.pension = pension;
-        calcularSalarioNeto();
-    }
-
-    public void obtenerDatos(BufferedReader reader) throws NombreInvalidoException,CedulaInvalidaException, IOException, DepartamentoInvalidoException  {
+    public void obtenerDatos(BufferedReader reader) throws NombreInvalidoException,CedulaInvalidaException, IOException, DepartamentoInvalidoException, SalarioBrutoInvalido  {
         System.out.println("Ingrese su nombre");
         setNombre(reader.readLine());
         System.out.println("Ingrese su cedula con guiones");
         setCedula(reader.readLine());
-        System.out.println("Departamentos:\n Finanzas, Recursos Humanos, Ventas, Tecnología o Administración");
+        System.out.println("Departamentos:\nFinanzas, Recursos Humanos, Ventas, Tecnología o Administración");
         System.out.println("Ingrese su departamento");
         setDepartamento(reader.readLine());
         System.out.println("Ingrese su salario Bruto");
         setSalarioBruto(Double.parseDouble(reader.readLine()));
-        System.out.println("¿desea descontar un préstamo? s/n");
-        if(reader.readLine() == "s"){
-            System.out.println("Ingrese el valor del préstamo");
-            setPrestamo(Double.parseDouble(reader.readLine()));
-        }
-        System.out.println("¿desea descontar una cuota? s/n");
-        if(reader.readLine() == "s"){
-            System.out.println("Ingrese el valor de la cuota");
-            setCuota(Double.parseDouble(reader.readLine()));
-        }
-        System.out.println("¿desea descontar una pensión? s/n");
-        if(reader.readLine() == "s"){
-            System.out.println("Ingrese el valor de la pensión");
-            setPension(Double.parseDouble(reader.readLine()));
-        }
-
-
-
+        descuentosAdicionales();//Esta arriba
 
 
     }
@@ -185,7 +211,6 @@ public class Empleado {
         System.out.println("Cedula: " + cedula);
         System.out.println("Departamento: " + departamento);
         System.out.println("Salario Bruto: " + salarioBruto);
-      <<<<<<< Branch1
         System.out.println("Salario Neto: " +  String.format("%.2f", salarioNeto));
 
     }

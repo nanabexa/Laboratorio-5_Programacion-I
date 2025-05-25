@@ -134,27 +134,45 @@ public class Empleado {
         }
     }
 
-    public void setSalarioBruto(Double salarioBruto) throws SalarioBrutoInvalido {
+    public void setSalarioBruto(Double salarioBruto) throws SalarioBrutoInvalidoException {
         if (salarioBruto == null) {
-            throw new SalarioBrutoInvalido("El salario bruto no puede estar vacío.");
+            throw new SalarioBrutoInvalidoException("El salario bruto no puede estar vacío.");
         }
         if (salarioBruto <= 0) {
-            throw new SalarioBrutoInvalido("El salario bruto debe ser mayor que 0.");
+            throw new SalarioBrutoInvalidoException("El salario bruto debe ser mayor que 0.");
         }
         this.salarioBruto = salarioBruto;
         calcularSalarioNeto();
     }
     public void setPrestamo(Double prestamo){
+        if(prestamo == null){
+            throw new PrestamoInvalidoException("El préstamo no puede ser nulo.");
+        }
+        if (prestamo <= 0) {
+            throw new PrestamoInvalidoException("El préstamo debe ser mayor que 0.");
+        }
         this.prestamo = prestamo;
         calcularSalarioNeto();
     }
 
     public void setCuota(Double cuota){
+        if(cuota == null){
+            throw new CuotaInvalidaException("La cuota no puede ser nulo.");
+        }
+        if (cuota <= 0) {
+            throw new CuotaInvalidaException("La cuota debe ser mayor que 0.");
+        }
         this.cuota = cuota;
         calcularSalarioNeto();
     }
 
     public void setPension(Double pension){
+        if(pension == null){
+            throw new PensionInvalidaException("La pension no puede ser nulo.");
+        }
+        if (pension <= 0) {
+            throw new PensionInvalidaException("La pension debe ser mayor que 0.");
+        }
         this.pension = pension;
         calcularSalarioNeto();
     }
@@ -168,23 +186,57 @@ public class Empleado {
     public double calcularSeguroEducativo(){
         return salarioBruto *0.0125;
     }
-    public double descuentosAdicionales() throws IOException {
-        Double totalDescuentosAdicionales = 0.0;
-        System.out.println("¿Desea descontar un préstamo? s/n");
-        if ("s".equals(reader.readLine().toLowerCase())) { //Puedes investigar cual es la diferencia entre toLowerCase y equalsIgnoreCase, intellij me marca que debes reemplazar
+
+    public void checkPrestamo(String sino) throws PrestamoInvalidoException, IOException {
+        if(sino == null){
+            throw new PrestamoInvalidoException("La selección de alternativa no puede ser nula.");
+        } else if ("s".equalsIgnoreCase(sino)) {
             System.out.println("Ingrese el valor del préstamo");
             setPrestamo(Double.parseDouble(reader.readLine()));
-        }
-        System.out.println("¿Desea descontar una cuota? s/n");
-        if ("s".equals(reader.readLine().toLowerCase())) {
+            return;
+        } else if ("n".equalsIgnoreCase(sino)) {
+            return;
+        } else {
+            throw new PrestamoInvalidoException("el caracter introducido no es válido. Debe ser un \"s\" (sí) o \"n\" (no).");
+            }
+    }
+
+    public void checkCuota(String sino) throws CuotaInvalidaException, IOException {
+        if(sino == null){
+            throw new CuotaInvalidaException("La selección de alternativa no puede ser nula.");
+        } else if ("s".equalsIgnoreCase(sino)) {
             System.out.println("Ingrese el valor de la cuota");
             setCuota(Double.parseDouble(reader.readLine()));
+            return;
+        } else if ("n".equalsIgnoreCase(sino)) {
+            return;
+        } else {
+            throw new CuotaInvalidaException("el caracter introducido no es válido. Debe ser un \"s\" (sí) o \"n\" (no).");
         }
-        System.out.println("¿Desea descontar una pensión? s/n");
-        if ("s".equals(reader.readLine().toLowerCase())) {
+    }
+
+    public void checkPension(String sino) throws PensionInvalidaException, IOException {
+        if(sino == null){
+            throw new PensionInvalidaException("La selección de alternativa no puede ser nula.");
+        } else if ("s".equalsIgnoreCase(sino)) {
             System.out.println("Ingrese el valor de la pensión");
             setPension(Double.parseDouble(reader.readLine()));
-        }return totalDescuentosAdicionales;
+            return;
+        } else if ("n".equalsIgnoreCase(sino)) {
+            return;
+        } else {
+            throw new PensionInvalidaException("el caracter introducido no es válido. Debe ser un \"s\" (sí) o \"n\" (no).");
+        }
+    }
+
+    public void descuentosAdicionales() throws IOException {
+        System.out.println("¿Desea descontar un préstamo? s/n");
+        checkPrestamo(reader.readLine());
+        System.out.println("¿Desea descontar una cuota? s/n");
+        checkCuota(reader.readLine());
+        System.out.println("¿Desea descontar una pensión? s/n");
+        checkPension(reader.readLine());
+        return;
     }//Lo ideal es meterlo en un metodo y luego pasarlo a la impresion es mas facil poner las exepciones ahi, y no llenar demasiado de codigo el prinft
 
 
@@ -192,7 +244,7 @@ public class Empleado {
         salarioNeto = salarioBruto - calcularSeguroSocial() - calcularSeguroEducativo() - prestamo - cuota - pension;
     }
 
-    public void obtenerDatos(BufferedReader reader) throws NombreInvalidoException,CedulaInvalidaException, IOException, DepartamentoInvalidoException, SalarioBrutoInvalido  {
+    public void obtenerDatos(BufferedReader reader) throws NombreInvalidoException,CedulaInvalidaException, IOException, DepartamentoInvalidoException, SalarioBrutoInvalidoException {
         System.out.println("Ingrese su nombre");
         setNombre(reader.readLine());
         System.out.println("Ingrese su cedula con guiones");
@@ -200,18 +252,31 @@ public class Empleado {
         System.out.println("Departamentos:\nFinanzas, Recursos Humanos, Ventas, Tecnología o Administración");
         System.out.println("Ingrese su departamento");
         setDepartamento(reader.readLine());
-        System.out.println("Ingrese su salario Bruto");
+        System.out.println("Ingrese su salario bruto");
         setSalarioBruto(Double.parseDouble(reader.readLine()));
         descuentosAdicionales();//Esta arriba
 
 
     }
     public void imprimirDatos() {
-        System.out.println("Nombre: " + nombre);
-        System.out.println("Cedula: " + cedula);
-        System.out.println("Departamento: " + departamento);
-        System.out.println("Salario Bruto: " + salarioBruto);
-        System.out.println("Salario Neto: " +  String.format("%.2f", salarioNeto));
+        final Object[][] tabla = new String[2][];
+        tabla[0] = new String[] {"Nombre", "Cédula", "Departamento", "Salario Bruto", "Préstamo", "Cuota", "Pensión", "Deducción por seguro social", "Deducción por seguro educativo", "Salario neto", };
+        tabla[1] = new String[] {nombre, cedula, departamento, String.valueOf(salarioBruto), String.valueOf(prestamo), String.valueOf(cuota), String.valueOf(pension), String.valueOf(calcularSeguroSocial()), String.valueOf(calcularSeguroEducativo()), String.valueOf(salarioNeto)};
+        for (final Object[] row : tabla) {
+            System.out.format("%-30s%-15s%-20s%-22s%-12s%-12s%-12s%-30s%-35s%-10s%n", row);
+        }
+
+        //System.out.println("Nombre: " + nombre);
+        //System.out.println("Cédula: " + cedula);
+        //System.out.println("Departamento: " + departamento);
+        //System.out.println("Salario Bruto: U$" + salarioBruto);
+        //System.out.println("Prestamo: U$" + prestamo);
+        //System.out.println("Cuota: U$" + cuota);
+        //System.out.println("Pensión: U$" + pension);
+        //System.out.println("Deducción por seguro social: U$" + calcularSeguroSocial());
+        //System.out.println("Deducción por seguro educativo: U$" + calcularSeguroEducativo());
+        //System.out.println("Salario Neto: U$" +  String.format("%.2f", salarioNeto));
+
 
     }
 }

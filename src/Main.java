@@ -10,7 +10,8 @@ public class Main {
             empleado.obtenerDatos(br);
             empleado.imprimirDatos();
 
-        }catch (NombreInvalidoException | CedulaInvalidaException | DepartamentoInvalidoException | SalarioBrutoInvalido e) {
+        }catch (NombreInvalidoException | CedulaInvalidaException | DepartamentoInvalidoException |
+                PensionInvalidaException | CuotaInvalidaException | PrestamoInvalidoException | SalarioBrutoInvalidoException e) {
             System.out.println("Error en la entrada: " + e.getMessage());
         }catch (NumberFormatException e) {
             System.out.println("Error: Ingrese un valor numérico válido. " + e.getMessage());

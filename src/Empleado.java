@@ -128,7 +128,7 @@ public class Empleado {
 
         } else {
             throw new DepartamentoInvalidoException(
-                    "Departamento inválido. Debe ser Finanzas, Recursos Humanos, Ventas, Tecnología o Administración."
+                    "Departamento inválido. Debe ser Finanzas, Recursos Humanos, Ventas, Tecnología o Administración.\nRecuerde utilizar tildes"
             );
         }
     }

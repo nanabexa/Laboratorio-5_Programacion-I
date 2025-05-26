@@ -12,7 +12,6 @@ public class Empleado {
     private Double pension;
     private BufferedReader reader = new BufferedReader(new java.io.InputStreamReader(System.in));
 
-
     public Empleado (){
         this.nombre = "";
         this.cedula = "";
@@ -123,8 +122,8 @@ public class Empleado {
         if (departamento.equalsIgnoreCase("FINANZAS") ||
                 departamento.equalsIgnoreCase("RECURSOS HUMANOS") ||
                 departamento.equalsIgnoreCase("VENTAS") ||
-                departamento.equalsIgnoreCase("TECNOLOGIA") ||
-                departamento.equalsIgnoreCase("ADMINISTRACION")) {
+                departamento.equalsIgnoreCase("TECNOLOGÍA") ||
+                departamento.equalsIgnoreCase("ADMINISTRACIÓN")) {
             this.departamento = departamento;
 
         } else {
@@ -237,8 +236,7 @@ public class Empleado {
         System.out.println("¿Desea descontar una pensión? s/n");
         checkPension(reader.readLine());
         return;
-    }//Lo ideal es meterlo en un metodo y luego pasarlo a la impresion es mas facil poner las exepciones ahi, y no llenar demasiado de codigo el prinft
-
+    }
 
     public void calcularSalarioNeto() {
         salarioNeto = salarioBruto - calcularSeguroSocial() - calcularSeguroEducativo() - prestamo - cuota - pension;
@@ -259,24 +257,41 @@ public class Empleado {
 
     }
     public void imprimirDatos() {
-        final Object[][] tabla = new String[2][];
-        tabla[0] = new String[] {"Nombre", "Cédula", "Departamento", "Salario Bruto", "Préstamo", "Cuota", "Pensión", "Deducción por seguro social", "Deducción por seguro educativo", "Salario neto", };
-        tabla[1] = new String[] {nombre, cedula, departamento, String.valueOf(salarioBruto), String.valueOf(prestamo), String.valueOf(cuota), String.valueOf(pension), String.valueOf(calcularSeguroSocial()), String.valueOf(calcularSeguroEducativo()), String.valueOf(salarioNeto)};
-        for (final Object[] row : tabla) {
-            System.out.format("%-30s%-15s%-20s%-22s%-12s%-12s%-12s%-30s%-35s%-10s%n", row);
+        String[] encabezados = {
+                "Nombre", "Cédula", "Departamento", "Salario Bruto", "Préstamo",
+                "Cuota", "Pensión", "Seguro Social", "Seguro Educativo", "Salario Neto"
+        };
+
+        String[] datos = {
+                nombre,
+                cedula,
+                departamento,
+                String.format("%.2f", salarioBruto),
+                String.format("%.2f", prestamo),
+                String.format("%.2f", cuota),
+                String.format("%.2f", pension),
+                String.format("%.2f", calcularSeguroSocial()),
+                String.format("%.2f", calcularSeguroEducativo()),
+                String.format("%.2f", salarioNeto)
+        };
+
+        // Se calcula longitud máxima de cada columna (dependiendo del tamaño del dato ingresado por el usuario)
+        int[] anchos = new int[encabezados.length];
+        for (int i = 0; i < encabezados.length; i++) {
+            anchos[i] = Math.max(encabezados[i].length(), datos[i].length()) + 2; // +2 para padding
         }
 
-        //System.out.println("Nombre: " + nombre);
-        //System.out.println("Cédula: " + cedula);
-        //System.out.println("Departamento: " + departamento);
-        //System.out.println("Salario Bruto: U$" + salarioBruto);
-        //System.out.println("Prestamo: U$" + prestamo);
-        //System.out.println("Cuota: U$" + cuota);
-        //System.out.println("Pensión: U$" + pension);
-        //System.out.println("Deducción por seguro social: U$" + calcularSeguroSocial());
-        //System.out.println("Deducción por seguro educativo: U$" + calcularSeguroEducativo());
-        //System.out.println("Salario Neto: U$" +  String.format("%.2f", salarioNeto));
+        // Se imprimen encabezados con padding dinámico (panding el relleno que le daria a cada encabezado para que se ajuste al tamaño del dato ingresado por el usuario)
+        for (int i = 0; i < encabezados.length; i++) {
+            System.out.printf("%-" + anchos[i] + "s", encabezados[i]);
+        }
+        System.out.println();
 
-
+        // 4. Imprimir valores
+        for (int i = 0; i < datos.length; i++) {
+            System.out.printf("%-" + anchos[i] + "s", datos[i]);
+        }
+        System.out.println();
     }
-}
+    //Ese seria nuestro programa espero que todo salga bien, lo ultimo no sabia muy bien como se realizaba por eso lo comente tanto
+    }
